@@ -2,7 +2,7 @@
 
 原项目：https://github.com/axiref/telegram-pwsbot
 
-机器人：https://t.me/GeekDroid_bot
+机器人：https://t.me/gdtougao_bot
 
 频道：https://t.me/OtakusNetwork
 
