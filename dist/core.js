@@ -1,0 +1,83 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.re = exports.blacklist = exports.lang = exports.helper = exports.vars = exports.bot = exports.subs = exports.config = undefined;
+
+var _nodeTelegramBotApi = require('node-telegram-bot-api');
+
+var _nodeTelegramBotApi2 = _interopRequireDefault(_nodeTelegramBotApi);
+
+var _helper = require('./utils/helper');
+
+var _helper2 = _interopRequireDefault(_helper);
+
+var _Lang = require('./utils/Lang');
+
+var _Lang2 = _interopRequireDefault(_Lang);
+
+var _BlackList = require('./model/BlackList');
+
+var _BlackList2 = _interopRequireDefault(_BlackList);
+
+var _Message = require('./model/Message');
+
+var _Message2 = _interopRequireDefault(_Message);
+
+var _Re = require('./model/Re');
+
+var _Re2 = _interopRequireDefault(_Re);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var subs = new _Message2.default('subs'); // 稿件
+var config = require('dotenv').config().parsed;
+
+if (config.AutoMute) {
+  process.env.TZ = config.AutoMute; //切换时区
+}
+
+if (!config) {
+  throw new Error("不存在 .env 配置，请确保将项目目录下具有 .env 配置文件！(配置文件模板：env.example)");
+} else if (!config.Token) {
+  throw new Error(".env 配置文件中不存在Token，请确保正确填写！");
+} else if (!config.Admin) {
+  throw new Error(".env 配置文件中不存在Admin，请确保正确填写！");
+} else if (!config.Channel) {
+  throw new Error(".env 配置文件中不存在Channel，请确保正确填写！");
+}
+
+var bot = new _nodeTelegramBotApi2.default(config.Token, { polling: true });
+
+// 保存机器人ID和UserName
+bot.getMe().then(function (info) {
+  _helper2.default.updateConfig({ BotID: info.id, BotUserName: info.username });
+});
+
+/**
+ * callback query data
+ * @type {Object}
+ */
+var vars = {
+  REC_ANY: 'receive:anonymous',
+  REC_REAL: 'receive:real',
+  SUB_ANY: 'submission_type:anonymous',
+  SUB_REAL: 'submission_type:real',
+  SUB_CANCEL: 'cancel:submission',
+  BOT_NOAUTH_KICK: 'ETELEGRAM: 403 Forbidden: bot was kicked from the channel chat',
+  BOT_NOAUTH: 'ETELEGRAM: 403 Forbidden: bot is not a member of the channel chat',
+  BOT_BLOCK: 'ETELEGRAM: 403 Forbidden: bot was blocked by the user'
+
+  // 语言工具
+};var lang = new _Lang2.default(config.Lang, vars);
+
+exports.config = config;
+exports.subs = subs;
+exports.bot = bot;
+exports.vars = vars;
+exports.helper = _helper2.default;
+exports.lang = lang;
+exports.blacklist = _BlackList2.default;
+exports.re = _Re2.default;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9jb3JlLmpzIl0sIm5hbWVzIjpbInN1YnMiLCJNZXNzYWdlIiwiY29uZmlnIiwicmVxdWlyZSIsInBhcnNlZCIsIkF1dG9NdXRlIiwicHJvY2VzcyIsImVudiIsIlRaIiwiRXJyb3IiLCJUb2tlbiIsIkFkbWluIiwiQ2hhbm5lbCIsImJvdCIsIlRlbGVCb3QiLCJwb2xsaW5nIiwiZ2V0TWUiLCJ0aGVuIiwiaGVscGVyIiwidXBkYXRlQ29uZmlnIiwiQm90SUQiLCJpbmZvIiwiaWQiLCJCb3RVc2VyTmFtZSIsInVzZXJuYW1lIiwidmFycyIsIlJFQ19BTlkiLCJSRUNfUkVBTCIsIlNVQl9BTlkiLCJTVUJfUkVBTCIsIlNVQl9DQU5DRUwiLCJCT1RfTk9BVVRIX0tJQ0siLCJCT1RfTk9BVVRIIiwiQk9UX0JMT0NLIiwibGFuZyIsIkxhbmciLCJibGFja2xpc3QiLCJyZSJdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUFBOzs7O0FBQ0E7Ozs7QUFDQTs7OztBQUNBOzs7O0FBQ0E7Ozs7QUFDQTs7Ozs7O0FBQ0EsSUFBTUEsT0FBTyxJQUFJQyxpQkFBSixDQUFZLE1BQVosQ0FBYixDLENBQWlDO0FBQ2pDLElBQUlDLFNBQVNDLFFBQVEsUUFBUixFQUFrQkQsTUFBbEIsR0FBMkJFLE1BQXhDOztBQUVBLElBQUlGLE9BQU9HLFFBQVgsRUFBcUI7QUFDbkJDLFVBQVFDLEdBQVIsQ0FBWUMsRUFBWixHQUFpQk4sT0FBT0csUUFBeEIsQ0FEbUIsQ0FDZTtBQUNuQzs7QUFFRCxJQUFJLENBQUNILE1BQUwsRUFBYTtBQUNYLFFBQU0sSUFBSU8sS0FBSixDQUFVLHdEQUFWLENBQU47QUFDRCxDQUZELE1BRU8sSUFBSSxDQUFDUCxPQUFPUSxLQUFaLEVBQW1CO0FBQ3hCLFFBQU0sSUFBSUQsS0FBSixDQUFVLDZCQUFWLENBQU47QUFDRCxDQUZNLE1BRUEsSUFBSSxDQUFDUCxPQUFPUyxLQUFaLEVBQW1CO0FBQ3hCLFFBQU0sSUFBSUYsS0FBSixDQUFVLDZCQUFWLENBQU47QUFDRCxDQUZNLE1BRUEsSUFBSSxDQUFDUCxPQUFPVSxPQUFaLEVBQXFCO0FBQzFCLFFBQU0sSUFBSUgsS0FBSixDQUFVLCtCQUFWLENBQU47QUFDRDs7QUFFRCxJQUFNSSxNQUFNLElBQUlDLDRCQUFKLENBQVlaLE9BQU9RLEtBQW5CLEVBQTBCLEVBQUNLLFNBQVMsSUFBVixFQUExQixDQUFaOztBQUVBO0FBQ0FGLElBQUlHLEtBQUosR0FBWUMsSUFBWixDQUFpQixnQkFBUTtBQUFFQyxtQkFBT0MsWUFBUCxDQUFvQixFQUFDQyxPQUFPQyxLQUFLQyxFQUFiLEVBQWlCQyxhQUFhRixLQUFLRyxRQUFuQyxFQUFwQjtBQUFvRSxDQUEvRjs7QUFFQTs7OztBQUlBLElBQU1DLE9BQU87QUFDVEMsV0FBUyxtQkFEQTtBQUVUQyxZQUFVLGNBRkQ7QUFHVEMsV0FBUywyQkFIQTtBQUlUQyxZQUFVLHNCQUpEO0FBS1RDLGNBQVksbUJBTEg7QUFNVEMsbUJBQWlCLGdFQU5SO0FBT1RDLGNBQVksbUVBUEg7QUFRVEMsYUFBVzs7QUFHZjtBQVhhLENBQWIsQ0FZQSxJQUFNQyxPQUFPLElBQUlDLGNBQUosQ0FBU2pDLE9BQU9pQyxJQUFoQixFQUFzQlYsSUFBdEIsQ0FBYjs7UUFFUXZCLE0sR0FBQUEsTTtRQUFRRixJLEdBQUFBLEk7UUFBTWEsRyxHQUFBQSxHO1FBQUtZLEksR0FBQUEsSTtRQUFNUCxNLEdBQUFBLGdCO1FBQVFnQixJLEdBQUFBLEk7UUFBTUUsUyxHQUFBQSxtQjtRQUFXQyxFLEdBQUFBLFkiLCJmaWxlIjoiY29yZS5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBUZWxlQm90IGZyb20gJ25vZGUtdGVsZWdyYW0tYm90LWFwaSc7XG5pbXBvcnQgaGVscGVyIGZyb20gJy4vdXRpbHMvaGVscGVyJztcbmltcG9ydCBMYW5nIGZyb20gJy4vdXRpbHMvTGFuZyc7XG5pbXBvcnQgYmxhY2tsaXN0IGZyb20gJy4vbW9kZWwvQmxhY2tMaXN0JztcbmltcG9ydCBNZXNzYWdlIGZyb20gJy4vbW9kZWwvTWVzc2FnZSc7XG5pbXBvcnQgcmUgZnJvbSAnLi9tb2RlbC9SZSc7XG5jb25zdCBzdWJzID0gbmV3IE1lc3NhZ2UoJ3N1YnMnKTsvLyDnqL/ku7ZcbmxldCBjb25maWcgPSByZXF1aXJlKCdkb3RlbnYnKS5jb25maWcoKS5wYXJzZWQ7XG5cbmlmIChjb25maWcuQXV0b011dGUpIHtcbiAgcHJvY2Vzcy5lbnYuVFogPSBjb25maWcuQXV0b011dGU7IC8v5YiH5o2i5pe25Yy6XG59XG5cbmlmICghY29uZmlnKSB7XG4gIHRocm93IG5ldyBFcnJvcihcIuS4jeWtmOWcqCAuZW52IOmFjee9ru+8jOivt+ehruS/neWwhumhueebruebruW9leS4i+WFt+aciSAuZW52IOmFjee9ruaWh+S7tu+8gSjphY3nva7mlofku7bmqKHmnb/vvJplbnYuZXhhbXBsZSlcIik7XG59IGVsc2UgaWYgKCFjb25maWcuVG9rZW4pIHtcbiAgdGhyb3cgbmV3IEVycm9yKFwiLmVudiDphY3nva7mlofku7bkuK3kuI3lrZjlnKhUb2tlbu+8jOivt+ehruS/neato+ehruWhq+WGme+8gVwiKVxufSBlbHNlIGlmICghY29uZmlnLkFkbWluKSB7XG4gIHRocm93IG5ldyBFcnJvcihcIi5lbnYg6YWN572u5paH5Lu25Lit5LiN5a2Y5ZyoQWRtaW7vvIzor7fnoa7kv53mraPnoa7loavlhpnvvIFcIilcbn0gZWxzZSBpZiAoIWNvbmZpZy5DaGFubmVsKSB7XG4gIHRocm93IG5ldyBFcnJvcihcIi5lbnYg6YWN572u5paH5Lu25Lit5LiN5a2Y5ZyoQ2hhbm5lbO+8jOivt+ehruS/neato+ehruWhq+WGme+8gVwiKVxufVxuXG5jb25zdCBib3QgPSBuZXcgVGVsZUJvdChjb25maWcuVG9rZW4sIHtwb2xsaW5nOiB0cnVlfSk7XG5cbi8vIOS/neWtmOacuuWZqOS6uklE5ZKMVXNlck5hbWVcbmJvdC5nZXRNZSgpLnRoZW4oaW5mbyA9PiB7IGhlbHBlci51cGRhdGVDb25maWcoe0JvdElEOiBpbmZvLmlkLCBCb3RVc2VyTmFtZTogaW5mby51c2VybmFtZSB9KSB9KVxuXG4vKipcbiAqIGNhbGxiYWNrIHF1ZXJ5IGRhdGFcbiAqIEB0eXBlIHtPYmplY3R9XG4gKi9cbmNvbnN0IHZhcnMgPSB7XG4gICAgUkVDX0FOWTogJ3JlY2VpdmU6YW5vbnltb3VzJyxcbiAgICBSRUNfUkVBTDogJ3JlY2VpdmU6cmVhbCcsXG4gICAgU1VCX0FOWTogJ3N1Ym1pc3Npb25fdHlwZTphbm9ueW1vdXMnLFxuICAgIFNVQl9SRUFMOiAnc3VibWlzc2lvbl90eXBlOnJlYWwnLFxuICAgIFNVQl9DQU5DRUw6ICdjYW5jZWw6c3VibWlzc2lvbicsXG4gICAgQk9UX05PQVVUSF9LSUNLOiAnRVRFTEVHUkFNOiA0MDMgRm9yYmlkZGVuOiBib3Qgd2FzIGtpY2tlZCBmcm9tIHRoZSBjaGFubmVsIGNoYXQnLFxuICAgIEJPVF9OT0FVVEg6ICdFVEVMRUdSQU06IDQwMyBGb3JiaWRkZW46IGJvdCBpcyBub3QgYSBtZW1iZXIgb2YgdGhlIGNoYW5uZWwgY2hhdCcsXG4gICAgQk9UX0JMT0NLOiAnRVRFTEVHUkFNOiA0MDMgRm9yYmlkZGVuOiBib3Qgd2FzIGJsb2NrZWQgYnkgdGhlIHVzZXInLFxufVxuXG4vLyDor63oqIDlt6XlhbdcbmNvbnN0IGxhbmcgPSBuZXcgTGFuZyhjb25maWcuTGFuZywgdmFycyk7XG5cbmV4cG9ydCB7Y29uZmlnLCBzdWJzLCBib3QsIHZhcnMsIGhlbHBlciwgbGFuZywgYmxhY2tsaXN0LCByZX07XG4iXX0=
